@@ -1,0 +1,92 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    width: calc(100%);
+    height: calc(100%);
+}
+
+.mapbox-directions-instructions {
+    overflow: auto !important;
+}
+
+div#geocoder-search {
+    width: 25em;
+}
+
+.marker {
+    font-size: 3em;
+    color: #bb0000;
+    cursor: pointer;
+}
+
+.mapboxgl-popup {
+    max-width: 200px;
+}
+
+.mapboxgl-popup-content {
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+p {
+    z-index: 4;
+    font-size: 14px;
+    color: white;
+
+}
+
+#nav{
+    height: 100%;
+    width: 300px;
+    font-size: 20px;
+    margin-top: 40px;
+    margin-left: 12px;
+    position:relative;
+    text-align: left;
+}
+
+.buttons{
+    display: flex; 
+    flex-direction: column; 
+}
+
+.myNav {
+    height: 100%;
+    width: 300px;
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    background-color: rgba(68, 68, 68, 0.525);
+    text-align: right;
+    padding-bottom: 20px;
+    padding-top: 20px;
+
+    font-size: 13px;
+    border-radius: 0.7em;
+
+}
+
+
+.nav-right{
+    position: absolute;
+    left: 300px;
+}
+button {
+    z-index: 3;
+    background-color: white;
+    font-size: 13px;
+    justify-content: center;
+    margin: 2em;
+    padding: 15px;
+    border-radius: 0.7em;
+}
