@@ -1,3 +1,92 @@
+function calculateDistance(p1, p2) {
+    return Math.sqrt(Math.pow(p2.coordinates[0] - p1.coordinates[0], 2) + Math.pow(p2.coordinates[1] - p1.coordinates[1], 2));
+  }
+ 
+  function calculatePathWeight(path, points) {
+    let weight = 0.0;
+    for (let i = 0; i < path.length - 1; ++i) {
+      weight += calculateDistance(points[path[i]], points[path[i + 1]]);
+    }
+    weight += calculateDistance(points[path[path.length - 1]], points[path[0]]);
+    return weight;
+  }
+ 
+  function tspBruteForce(n, points) {
+    const path = Array.from({ length: n }, (_, i) => i);
+    let minWeight = Number.MAX_SAFE_INTEGER;
+    let minPath;
+ 
+    do {
+      const weight = calculatePathWeight(path, points);
+      if (weight < minWeight) {
+        minWeight = weight;
+        minPath = path.slice();
+      }
+    } while (nextPermutation(path));
+ 
+    const optimalPath = minPath.map((index) => points[index]);
+    return { path: optimalPath, weight: minWeight };
+  }
+ 
+  function nearestNeighborTSP(n, points) {
+    let unvisited = new Set([...Array(n).keys()]);
+    const path = [];
+    let current = 0; // Start from node 0
+ 
+    while (unvisited.size > 1) {
+      path.push(current);
+      unvisited.delete(current);
+ 
+      let nearest = null;
+      let minDistance = Number.MAX_VALUE;
+ 
+      for (let node of unvisited) {
+        const distance = calculateDistance(points[current], points[node]);
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearest = node;
+        }
+      }
+ 
+      current = nearest;
+    }
+ 
+    // Add the last node to complete the cycle
+    path.push(current);
+ 
+    const optimalPath = path.map((index) => points[index]);
+    const weight = calculatePathWeight(path, points);
+ 
+    return { path: optimalPath, weight };
+  }
+ 
+  // Function to generate permutations
+  function nextPermutation(arr) {
+    let i = arr.length - 2;
+    while (i >= 0 && arr[i] >= arr[i + 1]) {
+      i--;
+    }
+ 
+    if (i >= 0) {
+      let j = arr.length - 1;
+      while (j > i && arr[j] <= arr[i]) {
+        j--;
+      }
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+ 
+    const reverseTail = arr.splice(i + 1).reverse();
+    arr.push(...reverseTail);
+ 
+    return i >= 0;
+  }
+ 
+  // Example usage:
+  function coordinatesToString(coordinates) {
+    return `[${coordinates[0]}, ${coordinates[1]}]`;
+  }
+ 
+
 // Mapbox Public Access Key
 mapboxgl.accessToken = 'pk.eyJ1IjoiamFjb2JtazgiLCJhIjoiY2xrcnNsdDRjMWU3cjNnbGtieXJmMzg5cyJ9.cf_XptPQMhPmMI-dmCXXXA';
 
@@ -38,6 +127,11 @@ const waypoints = [
 
 ];
 
+let tempBF =  [];
+let tempNN = [];
+temp = [];
+
+
 function clearGeocoder() {
     var geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder input');
     geocoderInput.value = ''; // Set the input value to an empty string
@@ -47,25 +141,63 @@ geocoder.on('result', function (event) {
     // Get the latitude and longitude from the result
     const latitude = event.result.geometry.coordinates[1];
     const longitude = event.result.geometry.coordinates[0];
-    const place = event.result.place_name
+    const name = event.result.place_name;
+
     // Print the latitude and longitude to the console
-    console.log('Latitude:', latitude);
-    console.log('Longitude:', longitude);
+    // console.log('Latitude:', latitude);
+    // console.log('Longitude:', longitude);
     const newWaypoint = {
         coordinates: [longitude, latitude],
-        label:place
+        label: name
     };
     waypoints.push(newWaypoint);
     clearGeocoder();
 
     console.log(waypoints);
 
-    // create text
-    const para = document.createElement("p");
-    const node = document.createTextNode(newWaypoint.label);
-    para.appendChild(node);
-    const element = document.getElementById("nav");
-    element.appendChild(para);
+  // Example usage:
+  const n = waypoints.length;
+
+
+  // Get results using the two algorithms directly
+  const bruteForceResult = tspBruteForce(n, waypoints);
+  const tspResult = nearestNeighborTSP(n, waypoints);
+ 
+    let BFresults = {
+        path: bruteForceResult.path.map((point) => ({
+          label: point.label,
+          coordinates: coordinatesToString(point.coordinates)
+        })),
+        weight: bruteForceResult.weight
+      };
+
+      let NNresults = {
+        path: tspResult.path.map((point) => ({
+          label: point.label,
+          coordinates: coordinatesToString(point.coordinates)
+        })),
+        weight: tspResult.weight
+      };
+
+    tempBF = BFresults.path
+    tempNN = NNresults.path;
+    temp = waypoints;
+
+    console.log("BF Result:", {
+        path: bruteForceResult.path.map((point) => ({
+          label: point.label,
+          coordinates: coordinatesToString(point.coordinates)
+        })),
+        weight: bruteForceResult.weight
+      });
+
+  console.log("TSP Result:", {
+    path: tspResult.path.map((point) => ({
+      label: point.label,
+      coordinates: coordinatesToString(point.coordinates)
+    })),
+    weight: tspResult.weight
+  });
 
 
     // Set origin and waypoints
@@ -98,16 +230,6 @@ function calculateETA(route) {
         const durationInSeconds = route.duration;
         const durationInMinutes = durationInSeconds / 60;
         console.log('ETA:', durationInMinutes, 'minutes');
-
-        /*
-        const para = document.createElement("p");
-        const node = document.createTextNode(newWaypoint.label);
-        para.appendChild(node);
-        const element = document.getElementById("map");
-        element.appendChild(para);
-
-        */
-       
     } else {
         console.log('No route found or an error occurred.');
     }
@@ -130,7 +252,7 @@ function calculateETA(route) {
         fitMapToBounds(bounds);  
 
         directions.on('route', function (event) {
-            console.log('Directions API Response:', event);
+            // console.log('Directions API Response:', event);
 
             if (event.route && event.route[0]) {
                 // Get the first route (there might be multiple alternatives)
@@ -144,8 +266,58 @@ function calculateETA(route) {
     }
 
    
-   
 });
+
+
+//clear section where results are displayed
+function reset() {
+  document.getElementById("results").innerHTML = "";
+}
+
+// display results in the original order locations were input
+function printOriginal() {
+  reset();
+  console.log("Printing Original Path");
+
+  // create paragraph text with point labels and display it
+  for (i = 0; i < temp.length; i++) {
+    const pText = document.createElement("p");
+    const text = document.createTextNode(temp[i].label);
+    pText.appendChild(text);
+    const element = document.getElementById("results");
+    element.appendChild(pText);
+  }
+}
+
+// display results in the order of the brute force algorithm
+function printBF() {
+  reset();
+  console.log("Printing Brute Force Path");
+
+  // create paragraph text with point labels and display it
+  for (i = 0; i < tempBF.length; i++) {
+    const pText = document.createElement("p");
+    const text = document.createTextNode(tempBF[i].label);
+    pText.appendChild(text);
+    const element = document.getElementById("results");
+    element.appendChild(pText);
+  }
+}
+
+// display results in the order of the nearest neighbor algorithm
+function printNN() {
+  reset();
+  console.log("Printing Closest Neighbor Path");
+
+  // create paragraph text with point labels and display it
+  for (i = 0; i < tempNN.length; i++) {
+    const pText = document.createElement("p");
+    const text = document.createTextNode(tempNN[i].label);
+    pText.appendChild(text);
+    const element = document.getElementById("results");
+    element.appendChild(pText);
+  }
+}
 
 
 // Custom CSS for waypoint markers
@@ -173,6 +345,6 @@ styleTag.textContent = customMarkerStyle;
 document.head.appendChild(styleTag);
 
 
-
 this.map.addControl(directions, 'top-right');
+
 

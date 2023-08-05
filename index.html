@@ -31,14 +31,16 @@
 
 <body> 
     <div class="myNav">
+        <p id="results"><br></p>
+        <p id="under"></p>
         <div id="nav"></div>
     </div>
     <div class="nav-right">
         <div class="buttons"> 
-        <button class="create" type"button">Original</button>
-        <button class="create" type"button">Brute Force</button>
-        <button class="create" type"button">Nearest Neighbor</button>
-        <button class="create" type"button">Reset</button>
+            <button type="button" onclick="printOriginal()">Original Path</button>
+            <button type="button" onclick="printBF()">Brute Force Algorithm</button>
+            <button class="create" type"button" onclick="printNN()">Nearest Neighbor Algorithm</button>
+            <button class="create" type"button" onclick="reset()">Reset</button>
         </div>
     </div>
 

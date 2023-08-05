@@ -41,52 +41,75 @@ div#geocoder-search {
 p {
     z-index: 4;
     font-size: 14px;
-    color: white;
-
 }
 
+/* displays text under the search bar */
+#under {
+    font-size: 20px;
+    text-align: left;
+    margin-left: 12px;
+    margin-top:50px;
+    color: white;
+    font-weight: bold;
+}
+
+/* displays results in the white box */
+#results {
+    z-index: 6;
+    font-size: 14px;
+    color: white;
+    margin-top:40px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* gray section on the left of the page */
 #nav{
     height: 100%;
     width: 300px;
     font-size: 20px;
-    margin-top: 40px;
+    margin-top: 30px;
     margin-left: 12px;
     position:relative;
     text-align: left;
 }
 
-.buttons{
-    display: flex; 
-    flex-direction: column; 
-}
-
+/* styling for algorithm buttons */
 .myNav {
     height: 100%;
     width: 300px;
     position: fixed;
     top: 0;
     z-index: 2;
-    background-color: rgba(68, 68, 68, 0.525);
+    background-color: rgba(33, 33, 33, 0.692);
     text-align: right;
     padding-bottom: 20px;
-    padding-top: 20px;
+    padding-top: 15px;
 
     font-size: 13px;
     border-radius: 0.7em;
-
 }
-
 
 .nav-right{
     position: absolute;
     left: 300px;
 }
+
+/* styling for algorithm buttons */
+.buttons{
+    display: flex; 
+    flex-direction: column; 
+   
+}
+
+/* styling for algorithm buttons */
 button {
     z-index: 3;
     background-color: white;
     font-size: 13px;
     justify-content: center;
     margin: 2em;
-    padding: 15px;
+    padding: 12px;
     border-radius: 0.7em;
 }
+
