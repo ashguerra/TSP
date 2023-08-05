@@ -127,8 +127,8 @@ const waypoints = [
 
 ];
 
-let tempBF =  [];
-let tempNN = [];
+let brute =  [];
+let nearest = [];
 temp = [];
 
 
@@ -163,7 +163,7 @@ geocoder.on('result', function (event) {
   const bruteForceResult = tspBruteForce(n, waypoints);
   const tspResult = nearestNeighborTSP(n, waypoints);
  
-    let BFresults = {
+    let bruteRes = {
         path: bruteForceResult.path.map((point) => ({
           label: point.label,
           coordinates: coordinatesToString(point.coordinates)
@@ -171,7 +171,7 @@ geocoder.on('result', function (event) {
         weight: bruteForceResult.weight
       };
 
-      let NNresults = {
+      let nearestRes = {
         path: tspResult.path.map((point) => ({
           label: point.label,
           coordinates: coordinatesToString(point.coordinates)
@@ -179,8 +179,8 @@ geocoder.on('result', function (event) {
         weight: tspResult.weight
       };
 
-    tempBF = BFresults.path
-    tempNN = NNresults.path;
+    brute = bruteRes.path
+    nearest = nearestRes.path;
     temp = waypoints;
 
     console.log("BF Result:", {
@@ -289,30 +289,30 @@ function printOriginal() {
   }
 }
 
-// display results in the order of the brute force algorithm
-function printBF() {
+// display the brute force algorithm results
+function printBrute() {
   reset();
   console.log("Printing Brute Force Path");
 
   // create paragraph text with point labels and display it
-  for (i = 0; i < tempBF.length; i++) {
+  for (i = 0; i < brute.length; i++) {
     const pText = document.createElement("p");
-    const text = document.createTextNode(tempBF[i].label);
+    const text = document.createTextNode(brute[i].label);
     pText.appendChild(text);
     const element = document.getElementById("results");
     element.appendChild(pText);
   }
 }
 
-// display results in the order of the nearest neighbor algorithm
-function printNN() {
+// display the nearest neighbor algorithm results
+function printNearest() {
   reset();
   console.log("Printing Closest Neighbor Path");
 
   // create paragraph text with point labels and display it
-  for (i = 0; i < tempNN.length; i++) {
+  for (i = 0; i < nearest.length; i++) {
     const pText = document.createElement("p");
-    const text = document.createTextNode(tempNN[i].label);
+    const text = document.createTextNode(nearest[i].label);
     pText.appendChild(text);
     const element = document.getElementById("results");
     element.appendChild(pText);
